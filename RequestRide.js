@@ -41,51 +41,56 @@ const RequestRide = ({ navigation }) => {
     { value: "Ration Card", label: "Ration Card" },
   ];
   const handleFind = (mob) => {
-    // setMobileNo(mob);
-    // Alert.alert(mobileNo);
-    // console.log(mobileNo);
+    
 
     setIsValid(true);
   };
   const handleSendOTP = async () => {
     console.log(mobileNo);
+    // 10.0.2.2:8000
     const response = await axios.post(`http://10.0.2.2:8000/api/user/otpauth`, {
-      // name: "kushal",
+      
       userEmail: mobileNo,
 
-      // password_confirmation: "123",
-      // tc: true,
+      
     });
-    // console.log(response.data.status);
+    
     if (response.data.status == "success") {
       setIsOTPSent(true);
     }
   };
   const verifyOTP = async () => {
-    // Alert.alert("OTP Verification");
+    console.log(OTP);
+    // // 10.0.2.2:8000
     const response = await axios.post(
       `http://10.0.2.2:8000/api/user/otpverify`,
       {
-        // name: "kushal",
+       
         enteredOTP: OTP,
 
-        // password_confirmation: "123",
-        // tc: true,
+        
       }
     );
-    // console.log("otp status : ", response.data.status);
+    
     if (response.data.status == "success") {
       setIsVerify(true);
     }
   };
   const addNewRequest = async () => {
+    
+    var today = new Date();
+    var requestTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var requestDate = today.getDay() + "/" + today.getMonth() + "/" + today.getFullYear();
+    // console.log(year, "time: ", time);
     const obj = {
       number: mobileNo,
       name: name,
       ride: ride,
       id: id,
+      requestTime: requestTime,
+      requestDate : requestDate,
     };
-
+    console.log(obj);
     const jsonValue = JSON.stringify(obj);
     await AsyncStorage.setItem("storage_Key", jsonValue);
 

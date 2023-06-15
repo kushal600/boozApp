@@ -12,15 +12,22 @@ import {
 // import Login from "./Login";
 import { useState } from "react";
 
-const Home = ({ route, navigation }) => {
+const Home =  ({ route, navigation }) => {
   // const [isNull, setIsNull] = useState(false);
   const name = route.params.myName;
   const req = route.params.newRequest;
+  const data = route.params.data;
+  const ride_end = route.params.ride_end;
+  
+  console.log("home dtaa",data);
+  console.log("ride_end",ride_end);
   const reqtemp = {
     id: "Election Card",
     name: "kushal",
     number: "8153033600",
     ride: "3",
+    requestTime: "14:49:20",
+    requestDate: "3/5/2023",
   };
   // if (name) {
   //   setIsNull(true);
@@ -45,7 +52,7 @@ const Home = ({ route, navigation }) => {
   // };
   const handleAssignRide = () => {
     console.log("assignride");
-    navigation.navigate("assignride");
+    navigation.navigate("assignride",{ newReq: req });
   };
   return (
     // <View>
@@ -71,13 +78,13 @@ const Home = ({ route, navigation }) => {
       >
         <Text style={styles.loginText}>Request Ride</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("collectpayment")}>
         <Text style={styles.loginText}>Collect Payments</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button}>
         <Text style={styles.loginText}>Today's Payments</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("finishride")}>
         <Text style={styles.loginText}>Finish Rides</Text>
       </TouchableOpacity>
       {reqtemp && (
@@ -87,6 +94,10 @@ const Home = ({ route, navigation }) => {
             <Text style={styles.loginText}>
               {reqtemp.name} has requested {reqtemp.ride} rides
             </Text>
+            <Text style={styles.loginText}>
+              {reqtemp.requestDate} , {reqtemp.requestTime} 
+            </Text>
+            
           </TouchableOpacity>
         </>
       )}
@@ -96,6 +107,9 @@ const Home = ({ route, navigation }) => {
           <TouchableOpacity style={styles.reqButton} onPress={handleAssignRide}>
             <Text style={styles.loginText}>
               {req.name} has requested {req.ride} rides
+            </Text>
+            <Text style={styles.loginText}>
+              {req.requestDate} , {req.requestTime} 
             </Text>
           </TouchableOpacity>
         </>
@@ -118,7 +132,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 25,
     color: "#003f5c",
-    marginBottom: 40,
+    marginBottom: 20,
     marginTop: 40,
   },
   inputView: {

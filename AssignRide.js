@@ -13,15 +13,17 @@ import { SelectList } from "react-native-dropdown-select-list";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import QRCode from "react-native-qrcode-svg";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import axios from "axios";
 // import Login from "./Login";
 import { useState, React, useEffect } from "react";
 // import BarCodeScanner
 
-const AssignRide = ({ navigation }) => {
+const AssignRide = ({ navigation , route}) => {
   const [hasPermission, setHasPermission] = useState(false);
   const [scanData, setScanData] = useState("");
   const [bikeId, setBikeId] = useState("");
-
+  const newReq = route.params.newReq;
+  console.log("inside asignride", newReq);
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -43,8 +45,33 @@ const AssignRide = ({ navigation }) => {
     console.log("type:", type);
   };
 
-  const assignRide = () => {
-    console.log(bikeId);
+  const assignRide = async() => {
+    var today = new Date();
+    var startTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    // name, email, bikeId, userId, numberOfBike
+    const obj = {
+      name: newReq.name,
+      email: "kushal@gmail.com",
+      bikeId : bikeId,
+      userId: newReq.id,
+      numberOfBike: newReq.ride,
+      start_time: startTime,
+      user_email: newReq.number,
+    };
+    console.log("objjjjjjj", obj);
+    // const jsonValue = JSON.stringify(obj);
+    // await AsyncStorage.setItem("assign_ride", jsonValue);
+
+    // const value = await AsyncStorage.getItem("assign_ride");
+    // console.log("for collect payments: ",value);
+
+    const response = await axios.post(`http://10.0.2.2:8000/api/user/bike`, obj);
+    console.log(response.data.status);
+    // await AsyncStorage.setItem("isRideAssigned", jsonValue);
+    const reqobj = JSON.stringify(obj);
+    await AsyncStorage.setItem('assignRide_obj', reqobj);
+    console.log("token stored")
+    navigation.navigate("home", { data: obj });
   };
   return (
     <View style={styles.container}>

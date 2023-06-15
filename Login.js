@@ -131,36 +131,41 @@ import {
   Button,
   Alert,
   SafeAreaView,
-  Pressable,
   TouchableOpacity,
 } from "react-native";
-// import { Axios } from "axios";
+import { SelectList } from "react-native-dropdown-select-list";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 // import Login from "./Login";
 import { useState } from "react";
+// import SelectInput from "native-base-select";
+// import { Select } from "react-select";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const handleLogin = async () => {
-    // Alert.alert("logged in");
+    
     const obj = {
       email: email,
       password: pass,
     };
+    console.log(obj)
+    // 10.0.2.2:8000
     const response = await axios.post(`http://10.0.2.2:8000/api/user/login`, {
-      // name: "kushal",
+      
       email: email,
       password: pass,
-      // password_confirmation: "123",
-      // tc: true,
+      
     });
     if (response.data.status == "success") {
+      await AsyncStorage.setItem('email', obj.email);
+      console.log("Emial stored");
       navigation.navigate("home", { myName: `${email}` });
     }
     console.log(response.data.status);
 
-    // navigation.navigate("home", { myName: `${name}` });
+    
   };
   return (
     <View style={styles.container}>
