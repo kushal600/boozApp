@@ -19,22 +19,55 @@ import { useState } from "react";
 
 const PaymentScreen = ({navigation,route}) => {
   const [selected, setSelected] = useState("");
+  const [cost,setCost] = useState("");
+  const [flag,setFlag] = useState(false);
 
     const data = route.params.data;
     // const endingTime = route.params.endTime;
     // console.log("name is: ", data);
     // console.log("ending time: ", endingTime);
-    const handleCash = () =>{
+    const handleCash = async () =>{
         console.log("paid with cash");
+        // email, name, bikeId, method, user_email
+        const email = await AsyncStorage.getItem("email");
+
+        const obj = {
+          email : email,
+          name: data.name,
+          bikeId : data.bikeId,
+          method :"cash",
+          user_email: data.user_email,
+
+
+      };
+      console.log(obj,"payment object");
+        const response = await axios.post(`http://10.0.2.2:8000/api/user/payment`, obj);
+        console.log(response.data.status,"payment method");
+
     };
-    const handleOnlinePayment = ()=>{
+    const handleOnlinePayment = async ()=>{
         console.log("paid online");
+        const email = await AsyncStorage.getItem("email");
+
+        const obj = {
+          email : email,
+          name: data.name,
+          bikeId : data.bikeId,
+          method :"online",
+          user_email: data.user_email,
+
+
+      };
+      console.log(obj,"payment object");
+        const response = await axios.post(`http://10.0.2.2:8000/api/user/payment`, obj);
+        console.log(response.data.status," online payment method");
+
     }
     const discountOptions = [
         { value: "--", label: "--" },
-        { value: "Battery Dead", label: "Battery Dead" },
-        { value: "Timing Issue", label: "Timing Issue" },
-        { value: "Marketin", label: "Marketin" },
+        { value: "battery", label: "battery" },
+        { value: "timing", label: "timing" },
+        { value: "marketin", label: "marketin" },
       ];
       const handleDiscount = async() =>{
         const email = await AsyncStorage.getItem("email");
@@ -51,7 +84,11 @@ const PaymentScreen = ({navigation,route}) => {
         };
         console.log(obj,"objjjjjjjjjjjjjjjjject");
         const response = await axios.post(`http://10.0.2.2:8000/api/user/rideendpayment`, obj);
-        console.log(response.data.status," :payment screen");
+        console.log(response.data.cost," :payment screen");
+        if(response.data.cost){
+          setCost(response.data.cost);
+          setFlag(true);
+        }
 
       }
   return (
@@ -69,6 +106,10 @@ const PaymentScreen = ({navigation,route}) => {
               onSelect={handleDiscount}
             />
           </View>
+          {flag && (<>
+        <TextInput style={styles.inputTextSelectCost}>Total cost is: {cost} </TextInput>
+      
+      </>)}
           <TextInput style={styles.inputTextSelect}>Select Payment Method </TextInput>
           <TouchableOpacity style={styles.button} onPress={handleCash}>
 
@@ -79,7 +120,7 @@ const PaymentScreen = ({navigation,route}) => {
       <TouchableOpacity style={styles.button} onPress={handleOnlinePayment}>
         <Text style={styles.loginText}>Online Payment</Text>
       </TouchableOpacity>
-            
+      
          
     </View>
   )
@@ -115,6 +156,11 @@ const styles = StyleSheet.create({
       height: 50,
       color: "#003f5c",
       fontSize: 20,
+    },
+    inputTextSelectCost: {
+      height: 60,
+      color: "red",
+      fontSize: 30,
     },
     forgot: {
       color: "white",
